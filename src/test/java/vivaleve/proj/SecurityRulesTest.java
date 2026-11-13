@@ -100,6 +100,22 @@ class SecurityRulesTest {
     }
 
     @Test
+    void semTokenDevolveJsonDe401() throws Exception {
+        mvc.perform(get("/v1/entries"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("401"))
+                .andExpect(jsonPath("$.message").value("Token de acesso não informado"));
+    }
+
+    @Test
+    void tokenInvalidoDevolveJsonDe401() throws Exception {
+        mvc.perform(get("/v1/entries").header("Authorization", "Bearer token-falso"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value("401"))
+                .andExpect(jsonPath("$.message").value("Token inválido ou expirado"));
+    }
+
+    @Test
     void tokenValidoUsaOIdDoTokenEIgnoraUserIdDaUrl() throws Exception {
         when(entryService.listarPorUsuario(7L)).thenReturn(List.of());
 

@@ -21,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import vivaleve.proj.handler.JwtAuthenticationEntryPoint;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -85,6 +86,8 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationEntryPoint entryPoint = new JwtAuthenticationEntryPoint();
+
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
@@ -92,8 +95,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/auth/**", "/error").permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(entryPoint))
                 .oauth2ResourceServer(oauth -> oauth
                         .bearerTokenResolver(bearerTokenResolver())
+                        .authenticationEntryPoint(entryPoint)
                         .jwt(Customizer.withDefaults()));
         return http.build();
     }
