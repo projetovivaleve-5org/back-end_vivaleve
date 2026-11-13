@@ -1,6 +1,8 @@
 package vivaleve.proj.handler;
 
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -37,6 +39,19 @@ public class GlobalExceptionHandler {
                 .get(0)
                 .getDefaultMessage();
         return build(HttpStatus.BAD_REQUEST, message);
+    }
+
+    // JSON malformado ou com valor inválido (ex.: emoção/humor que não existe no enum).
+    // Antes caía no handler genérico e virava 500.
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleUnreadableBody(HttpMessageNotReadableException ex) {
+        return build(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido");
+    }
+
+    // Parâmetro da URL com tipo errado (ex.: /v1/diary/abc). Antes virava 500.
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(TypeMismatchException ex) {
+        return build(HttpStatus.BAD_REQUEST, "Parâmetro inválido: " + ex.getPropertyName());
     }
 
     @ExceptionHandler(Exception.class)
