@@ -28,7 +28,7 @@ public class MoodLogController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MoodLogDto.MoodLogResponse> create(
-            @AuthenticationPrincipal Jwt jwt,   // trocar pelo usuário autenticado (JWT)
+            @AuthenticationPrincipal Jwt jwt,
             @RequestParam @NotNull MoodType mood,
             @RequestParam(required = false) @Size(max = 500) String note,
             @RequestParam(required = false) MultipartFile image) {
