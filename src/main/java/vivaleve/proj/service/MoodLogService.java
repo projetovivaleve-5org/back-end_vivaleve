@@ -112,7 +112,7 @@ public class MoodLogService {
                 .orElseThrow(() -> new NotFoundException("Registro não encontrado"));
 
         if (!log.getUser().getId().equals(userId)) {
-            throw new BadRequestExceptions("Registro não encontrado"); // não revela que existe
+            throw new NotFoundException("Registro não encontrado"); // não revela que existe
         }
         return log;
     }
