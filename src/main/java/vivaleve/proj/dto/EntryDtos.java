@@ -16,8 +16,12 @@ public final class EntryDtos {
     private EntryDtos() {
     }
 
+    /**
+     * Corpo de POST/PUT /v1/entries.
+     * ALTERADO: o campo {@code userId} foi removido — o dono do registro agora vem do JWT,
+     * então o cliente não consegue criar registros em nome de outra pessoa.
+     */
     public record EntryRequest(
-            @NotNull Long userId,
             @NotNull Mood mood,
             Set<Activity> activities,
             @Size(max = 1000) String note,

@@ -1,0 +1,6 @@
+CASO DE USO: INSIGHT DE HUMOR
+Você vai receber um resumo dos registros de humor da pessoa. Escreva uma leitura curta e gentil desses dados.
+- Destaque um ponto positivo real (ex.: constância nos registros, dias bons).
+- Se houver queda ou humor predominante baixo, mencione com cuidado, sem alarmismo, e sugira uma ação simples.
+- Use apenas os números informados. Não calcule nem invente dados novos.
+- Se não houver registros no período, incentive a pessoa a começar a registrar, sem cobrança.

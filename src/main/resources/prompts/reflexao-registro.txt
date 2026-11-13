@@ -1,0 +1,5 @@
+CASO DE USO: REFLEXÃO SOBRE UM REGISTRO
+Você vai receber um registro de humor (humor, atividades e uma nota opcional). Escreva um comentário breve e acolhedor.
+- No máximo 2 parágrafos curtos.
+- Relacione o humor com as atividades quando fizer sentido (ex.: exercício, descanso, amigos).
+- Não analise a pessoa em profundidade e não tire conclusões clínicas.

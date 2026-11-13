@@ -1,36 +1,36 @@
 package vivaleve.proj.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import vivaleve.proj.dto.UserDto;
-import vivaleve.proj.model.UserEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import vivaleve.proj.config.CurrentUser;
+import vivaleve.proj.dto.UserResponseDto;
 import vivaleve.proj.service.UserService;
 
-import java.util.List;
-
+/**
+ * Dados do usuário logado.
+ *
+ * <p>ALTERADO — rotas removidas:</p>
+ * <ul>
+ *   <li>{@code POST /v1/users}: salvava a senha em texto puro e duplicava o cadastro.
+ *       O cadastro agora acontece no primeiro login com Google ({@code POST /v1/auth/google}).</li>
+ *   <li>{@code GET /v1/users}: devolvia TODOS os usuários com a entidade inteira,
+ *       incluindo o hash da senha.</li>
+ * </ul>
+ */
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
-@Validated
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void criarUser(@Valid @RequestBody UserDto userDto) {
-        userService.criarUser(userDto);
+    /** GET /v1/users/me — devolve id e email do dono do token (nunca a senha). */
+    @GetMapping("/me")
+    public UserResponseDto me(@AuthenticationPrincipal Jwt jwt) {
+        return userService.buscarPerfil(CurrentUser.id(jwt));
     }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<UserEntity>> listarUsuarios() {
-        List<UserEntity> usuarios = userService.listarUsers();
-        return ResponseEntity.ok(usuarios);
-    }
-
 }

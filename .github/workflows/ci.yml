@@ -1,0 +1,59 @@
+name: CI
+
+# Roda em todo push (qualquer branch) e em todo Pull Request para develop/main.
+on:
+  push:
+  pull_request:
+    branches: [develop, main]
+
+# Se subir outro push na mesma branch, cancela a execução antiga.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    name: Compila e roda os testes
+    runs-on: ubuntu-latest
+    steps:
+      # Em PR, o GitHub já faz checkout do resultado do merge (sua branch + develop),
+      # então os testes rodam no código como ele vai ficar depois de mesclar.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # Os testes usam H2 em memória (application-test.properties): não precisa de banco nem de chave.
+      - name: Testes
+        run: bash mvnw -B verify
+
+  conflito-com-develop:
+    name: Verifica conflito com a develop
+    # Só nas branches de feature. (Em PR com conflito o GitHub nem roda o workflow,
+    # por isso a checagem é feita no push.)
+    if: github.event_name == 'push' && github.ref_name != 'develop' && github.ref_name != 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tenta mesclar a develop nesta branch (sem salvar)
+        run: |
+          git config user.name "ci"
+          git config user.email "ci@example.com"
+          if git merge --no-commit --no-ff origin/develop; then
+            echo "Sem conflito com a develop." >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "## Conflito com a develop"
+              echo "Rode \`git pull origin develop\` na sua máquina e resolva estes arquivos:"
+              echo
+              git diff --name-only --diff-filter=U | sed 's/^/- /'
+            } >> "$GITHUB_STEP_SUMMARY"
+            git diff --name-only --diff-filter=U
+            exit 1
+          fi

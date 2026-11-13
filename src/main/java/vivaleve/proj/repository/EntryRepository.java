@@ -8,9 +8,16 @@ import vivaleve.proj.model.EntryEntity;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EntryRepository extends JpaRepository<EntryEntity, Long> {
+
+    /**
+     * Busca um registro só se ele pertencer ao usuário informado
+     * (SQL gerado: ... WHERE id = ? AND usuario_id = ?). Base da checagem de dono no EntryService.
+     */
+    Optional<EntryEntity> findByIdAndUser_Id(Long id, Long userId);
 
     /** Lista todos os registros do usuário, do mais recente para o mais antigo. */
     List<EntryEntity> findByUser_IdOrderByDateDesc(Long userId);

@@ -1,7 +1,14 @@
 package vivaleve.proj.exceptions;
 
-public class ErrorResponse extends RuntimeException {
-    public ErrorResponse(String message) {
-        super(message);
-    }
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class ErrorResponse {
+
+    private String message;
+    private String status;
 }
